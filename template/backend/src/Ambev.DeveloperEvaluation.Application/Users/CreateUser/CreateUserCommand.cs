@@ -20,9 +20,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 /// </remarks>
 public class CreateUserCommand : IRequest<CreateUserResult>
 {
-    /// <summary>
-    /// Gets or sets the username of the user to be created.
-    /// </summary>
+    
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
