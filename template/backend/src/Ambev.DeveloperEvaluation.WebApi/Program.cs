@@ -6,9 +6,11 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
+using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Ambev.DeveloperEvaluation.ORM.Seeding;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -29,11 +31,9 @@ public class Program
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
 
+            // Substituído para usar banco de dados em memória
             builder.Services.AddDbContext<DefaultContext>(options =>
-                options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
-                )
+                options.UseInMemoryDatabase("AmbevDb")
             );
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -53,6 +53,8 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
+
+           
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -63,12 +65,18 @@ public class Program
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+           // app.UseAuthentication();
+           // app.UseAuthorization();
 
             app.UseBasicHealthChecks();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+                 DatabaseSeeder.SeedDatabaseAsync(context);
+            }
 
             app.Run();
         }
