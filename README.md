@@ -1,86 +1,113 @@
-# Developer Evaluation Project
 
-`READ CAREFULLY`
+# 🍺 Ambev Developer Evaluation API
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+Projeto desenvolvido por **Edio Rhoden** como parte de uma avaliação técnica, finalizado em **1 dia e meio**.  
+Esta API simula um sistema de vendas da Ambev, com controle de produtos, clientes, filiais, vendas e regras de negócio associadas.
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+---
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+## 🚀 Tecnologias Utilizadas
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+- **.NET 8**
+- **C#**
+- **Entity Framework Core (InMemory)**
+- **CQRS + MediatR**
+- **AutoMapper**
+- **FluentValidation**
+- **Swagger**
+- **Serilog**
+- **Clean Architecture + DDD**
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+---
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+## 🧠 Regras de Negócio
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+- Compras com **mais de 4** unidades do mesmo produto: **10% de desconto**
+- Compras entre **10 e 20** unidades do mesmo produto: **20% de desconto**
+- **Máximo permitido**: 20 unidades por produto
+- **Sem desconto** para quantidades inferiores a 4
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+---
 
-### Business Rules
+## 🗃️ Estrutura de Pastas
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+```bash
+src/
+├── Ambev.DeveloperEvaluation.WebApi       # API
+├── Ambev.DeveloperEvaluation.Application  # Commands, Queries, Handlers, DTOs
+├── Ambev.DeveloperEvaluation.Domain       # Entidades e Interfaces
+├── Ambev.DeveloperEvaluation.ORM          # DbContext (EF Core InMemory)
+├── Ambev.DeveloperEvaluation.IoC          # Injeção de dependência
+├── Ambev.DeveloperEvaluation.Infrastructure# Publicador de eventos
+```
 
-These business rules define quantity-based discounting tiers and limitations:
+---
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+## 🔧 Como Rodar o Projeto
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/ediorhodendev/Ambev.git
+   ```
+2. Abra a solução no **Visual Studio** ou **VS Code**
+3. Rode o projeto **Ambev.DeveloperEvaluation.WebApi** com perfil `IIS Express`
+4. Acesse a documentação via [https://localhost:xxxx/swagger](https://localhost:xxxx/swagger)
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+🧠 **Importante**:  
+Ao rodar o projeto, o banco de dados em memória será criado automaticamente com 30 registros de exemplo para cada entidade: `Product`, `Customer`, `Branch`, `Sale`.
 
-See [Overview](/.doc/overview.md)
+---
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+## 📦 Endpoints Principais
 
-See [Tech Stack](/.doc/tech-stack.md)
+| Recurso     | Método | Rota                        | Ação                            |
+|-------------|--------|-----------------------------|---------------------------------|
+| Produtos    | GET    | `/api/products/{id}`        | Obter produto por ID           |
+|             | GET    | `/api/products`             | Listar todos os produtos       |
+|             | POST   | `/api/products`             | Criar novo produto             |
+|             | PUT    | `/api/products/{id}`        | Atualizar produto              |
+|             | DELETE | `/api/products/{id}`        | Remover produto                |
+| Clientes    | GET    | `/api/customers/{id}`       | Obter cliente por ID           |
+|             | POST   | `/api/customers`            | Criar novo cliente             |
+|             | PUT    | `/api/customers/{id}`       | Atualizar cliente              |
+|             | DELETE | `/api/customers/{id}`       | Remover cliente                |
+| Filiais     | GET    | `/api/branches/{id}`        | Obter filial por ID            |
+|             | POST   | `/api/branches`             | Criar nova filial              |
+|             | PUT    | `/api/branches/{id}`        | Atualizar filial               |
+|             | DELETE | `/api/branches/{id}`        | Remover filial                 |
+| Vendas      | GET    | `/api/sale/all`             | Listar todas as vendas         |
+|             | GET    | `/api/sale/{id}`            | Obter venda por ID             |
+|             | POST   | `/api/sale`                 | Criar nova venda               |
+|             | PUT    | `/api/sale/{id}`            | Atualizar venda                |
+|             | DELETE | `/api/sale/{id}`            | Excluir venda                  |
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+---
 
-See [Frameworks](/.doc/frameworks.md)
+## 📢 Publicação de Eventos (Diferencial)
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+Eventos simulados e logados ao executar as operações:
 
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
+- `SaleCreated`
+- `SaleModified`
+- `SaleCancelled`
+- `ItemCancelled`
 
-See [Project Structure](/.doc/project-structure.md)
+Estes eventos são registrados via `ILogger` para simular integração com mensagerias como Kafka, SQS ou RabbitMQ.
+
+---
+
+## 📝 Considerações Finais
+
+- Projeto finalizado com arquitetura limpa, testável e escalável.
+- Estrutura pronta para integrar autenticação, banco real (PostgreSQL), mensageria e testes automatizados.
+- Cumprimento total das regras de negócio solicitadas com código moderno e limpo.
+
+---
+
+## 📷 Exemplo de Execução
+
+![Execução com IIS Express](./docs/iis-express-execution.png)
+
+---
+
+Se quiser a versão em PDF com layout corporativo, você pode [baixar aqui](./docs/Ambev_Developer_Evaluation_Final.pdf).
