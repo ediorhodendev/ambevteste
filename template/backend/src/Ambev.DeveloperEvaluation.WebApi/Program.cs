@@ -8,9 +8,15 @@ using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+
 using Serilog;
 using Ambev.DeveloperEvaluation.ORM.Seeding;
+using Ambev.DeveloperEvaluation.Application.Customers.Create;
+using Ambev.DeveloperEvaluation.Application.Customers.Update;
+using FluentValidation;
+using FluentAssertions.Common;
+using Ambev.DeveloperEvaluation.Application.Customers.Validators;
+using UpdateCustomerCommandValidator = Ambev.DeveloperEvaluation.Application.Customers.Validators.UpdateCustomerCommandValidator;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -39,6 +45,21 @@ public class Program
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.RegisterDependencies();
+
+            builder.Services.AddTransient<IValidator<CreateCustomerCommand>, CreateCustomerCommandValidator>();
+            builder.Services.AddTransient<IValidator<UpdateCustomerCommand>, UpdateCustomerCommandValidator>();
+            
+
+
+
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            
+
+
+
+
+
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 

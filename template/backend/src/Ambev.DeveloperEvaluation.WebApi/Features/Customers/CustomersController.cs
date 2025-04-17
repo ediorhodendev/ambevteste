@@ -34,12 +34,20 @@ public class CustomersController : BaseController
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateCustomerResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    [ProducesResponseType(typeof(ApiResponseWithData<CreateCustomerResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Iniciando criação de cliente: {@Request}", request);
 
+        // Mapeia para o comando de aplicação
         var command = _mapper.Map<CreateCustomerCommand>(request);
+
+        // Validação automática via ValidationBehavior (deve estar registrado no pipeline)
         var result = await _mediator.Send(command, cancellationToken);
+
+        // Mapeia resultado para a resposta
         var response = _mapper.Map<CreateCustomerResponse>(result);
 
         _logger.LogInformation("Cliente criado com sucesso. ID: {Id}", response.Id);
@@ -51,6 +59,7 @@ public class CustomersController : BaseController
             Data = response
         });
     }
+
 
     /// <summary>
     /// Busca um cliente pelo ID
