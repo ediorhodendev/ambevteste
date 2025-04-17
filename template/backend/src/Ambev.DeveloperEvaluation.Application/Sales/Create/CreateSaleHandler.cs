@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ambev.DeveloperEvaluation.Common.Events;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
@@ -16,16 +17,27 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.Create
 {
     public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
     {
+
+       
+
+
+
         private readonly ISaleRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateSaleHandler> _logger;
+        private readonly IEventPublisher _eventPublisher;
 
-        public CreateSaleHandler(ISaleRepository repository, IMapper mapper, ILogger<CreateSaleHandler> logger)
+        public CreateSaleHandler(ISaleRepository repository, IMapper mapper, ILogger<CreateSaleHandler> logger, IEventPublisher eventPublisher)
         {
             _repository = repository;
             _mapper = mapper;
             _logger = logger;
+            _eventPublisher = eventPublisher;
         }
+
+
+
+
 
         public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
         {
@@ -54,6 +66,8 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.Create
             await _repository.CreateAsync(sale, cancellationToken);
 
             _logger.LogInformation("SaleCreated event published for SaleId: {SaleId}", sale.Id);
+
+            await _eventPublisher.PublishAsync(sale, "SaleCreated", cancellationToken);
 
             var result = new CreateSaleResult
             {
