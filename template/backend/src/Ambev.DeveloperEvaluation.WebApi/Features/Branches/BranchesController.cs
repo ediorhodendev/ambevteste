@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Branches.Create;
 using Ambev.DeveloperEvaluation.Application.Branches.Delete;
+using Ambev.DeveloperEvaluation.Application.Branches.Dtos;
 using Ambev.DeveloperEvaluation.Application.Branches.Get;
 using Ambev.DeveloperEvaluation.Application.Branches.Update;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -126,5 +127,19 @@ public class BranchesController : BaseController
         _logger.LogInformation("Filial excluída com sucesso. ID: {Id}", id);
 
         return Ok(new ApiResponse { Success = true, Message = "Branch deleted successfully" });
+    }
+
+    [HttpGet("all")]
+    [ProducesResponseType(typeof(List<BranchDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllBranches(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Recuperando todas as filiais");
+
+        var query = new GetAllBranchesQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+
+        _logger.LogInformation("Total de filiais recuperadas: {Count}", result?.Count ?? 0);
+
+        return Ok(result);
     }
 }

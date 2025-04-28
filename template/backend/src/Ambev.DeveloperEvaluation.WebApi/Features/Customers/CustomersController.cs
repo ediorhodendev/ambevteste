@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Customers.Create;
 using Ambev.DeveloperEvaluation.Application.Customers.Delete;
+using Ambev.DeveloperEvaluation.Application.Customers.Dtos;
 using Ambev.DeveloperEvaluation.Application.Customers.Get;
 using Ambev.DeveloperEvaluation.Application.Customers.Update;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -31,10 +32,7 @@ public class CustomersController : BaseController
     /// <summary>
     /// Cria um novo cliente
     /// </summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateCustomerResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [HttpPost]
+     [HttpPost]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateCustomerResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequest request, CancellationToken cancellationToken)
@@ -136,4 +134,19 @@ public class CustomersController : BaseController
 
         return Ok(new ApiResponse { Success = true, Message = "Customer deleted successfully" });
     }
+
+    [HttpGet("all")]
+    [ProducesResponseType(typeof(List<CustomerDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllCustomers(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Recuperando todos os clientes");
+
+        var query = new GetAllCustomersQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+
+        _logger.LogInformation("Total de clientes recuperados: {Count}", result?.Count ?? 0);
+
+        return Ok(result);
+    }
+
 }

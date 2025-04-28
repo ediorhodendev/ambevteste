@@ -2,6 +2,8 @@
 using Ambev.DeveloperEvaluation.Application.Product.Delete;
 using Ambev.DeveloperEvaluation.Application.Product.Get;
 using Ambev.DeveloperEvaluation.Application.Product.Update;
+using Ambev.DeveloperEvaluation.Application.Products.Dtos;
+using Ambev.DeveloperEvaluation.Application.Products.Get;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.Create;
 using Ambev.DeveloperEvaluation.WebApi.Features.Product.Get;
@@ -128,5 +130,18 @@ public class ProductsController : BaseController
         _logger.LogInformation("Produto excluído com sucesso. ID: {Id}", id);
 
         return Ok(new ApiResponse { Success = true, Message = "Product deleted successfully" });
+    }
+    [HttpGet("all")]
+    [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Recuperando todos os produtos");
+
+        var query = new GetAllProductsQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+
+        _logger.LogInformation("Total de produtos recuperados: {Count}", result?.Count ?? 0);
+
+        return Ok(result);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Customers.Create;
+using Ambev.DeveloperEvaluation.Application.Customers.Dtos;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
 
@@ -12,6 +13,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Customers.Create
             CreateMap<CreateCustomerResult, CreateCustomerResponse>();
             CreateMap<CreateCustomerCommand, Customer>();
             CreateMap<Customer, CreateCustomerResult>();
+            CreateMap<Customer, CustomerDto>();
+
         }
     }
 }

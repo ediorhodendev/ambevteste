@@ -54,9 +54,22 @@ public class Program
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-            
 
 
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins(
+                                          "http://localhost:4200" // Permitir o seu Angular
+                                      )
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                                  });
+            });
 
 
 
@@ -86,8 +99,13 @@ public class Program
 
             app.UseHttpsRedirection();
 
-           // app.UseAuthentication();
-           // app.UseAuthorization();
+            app.UseHttpsRedirection();
+
+            // ATIVA CORS AQUI! ??
+            app.UseCors(MyAllowSpecificOrigins);
+
+            // app.UseAuthentication();
+            // app.UseAuthorization();
 
             app.UseBasicHealthChecks();
 
